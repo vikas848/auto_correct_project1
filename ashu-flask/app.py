@@ -25,14 +25,53 @@ def index():
 @app.route('/home', methods=['GET', 'POST'])
 def home():
     #user_input = None
-    output = None
+    my_output = None
     if request.method == 'POST':  # Handle form submission
         user_input = request.form.get('user_input')  # Get the text from the textarea
         data="https://randomuser.me/"+user_input
         x1=requests.get(data)
         output=x1.json()
-    return render_template('home.html', user_input=output)
+        b = output["results"]
+
+        c = (b[0])
+ 
+        gender = (c["gender"])
+
+        title = (c["name"]["title"])
+
+        first = (c["name"]["first"])
+
+        last = (c["name"]["last"]) 
+
+        date = (c["dob"]["date"])
+
+        age = (c["dob"]["age"])
+
+        fullname = gender +" "+ title + " "+ first + " " + last   + " " + date +" "+ str(age)
+
+        Country = (c["location"]["country"])
+
+        state = (c["location"]["state"])
+
+        city = (c["location"]["city"])
+
+        postcode = (c["location"]["postcode"])
 
 
-if __name__ == '__main__':
-    app.run(debug=True,port=5009)
+        post= Country +" "+ state +" "+ city +" "+ str(postcode)
+
+        username = (c["login"]["username"])
+
+        password = (c["login"]["password"])
+
+        email = (c["email"])
+
+        userId = username +" "+ password +" "+ email
+
+        my_output= fullname +" "+ post +" "+ userId
+
+    return render_template('home.html', user_input=my_output)
+
+
+if __name__ == '__main__': 
+    app.run(debug=True,port=5004)
