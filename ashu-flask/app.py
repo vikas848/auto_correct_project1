@@ -28,50 +28,59 @@ def home():
     my_output = None
     if request.method == 'POST':  # Handle form submission
         user_input = request.form.get('user_input')  # Get the text from the textarea
-        data="https://randomuser.me/"+user_input
-        x1=requests.get(data)
-        output=x1.json()
-        b = output["results"]
+        if user_input=="api":
 
-        c = (b[0])
+           data="https://randomuser.me/"+user_input
+           x1=requests.get(data)
+           output=x1.json()
+           b = output["results"]
+
+           c = (b[0])
  
-        gender = (c["gender"])
+           gender = (c["gender"])
 
-        title = (c["name"]["title"])
+           title = (c["name"]["title"])
 
-        first = (c["name"]["first"])
+           first = (c["name"]["first"])
 
-        last = (c["name"]["last"]) 
+           last = (c["name"]["last"]) 
 
-        date = (c["dob"]["date"])
+           date = (c["dob"]["date"])
 
-        age = (c["dob"]["age"])
+           age = (c["dob"]["age"])
 
-        fullname = gender +" "+ title + " "+ first + " " + last   + " " + date +" "+ str(age)
+           fullname = gender +" "+ title + " "+ first + " " + last   + " " + date +" "+ str(age)
 
-        Country = (c["location"]["country"])
+           Country = (c["location"]["country"])
 
-        state = (c["location"]["state"])
+           state = (c["location"]["state"])
 
-        city = (c["location"]["city"])
+           city = (c["location"]["city"])
 
-        postcode = (c["location"]["postcode"])
+           postcode = (c["location"]["postcode"])
 
 
-        post= Country +" "+ state +" "+ city +" "+ str(postcode)
+           post= Country +" "+ state +" "+ city +" "+ str(postcode)
 
-        username = (c["login"]["username"])
+           username = (c["login"]["username"])
 
-        password = (c["login"]["password"])
+           password = (c["login"]["password"])
 
-        email = (c["email"])
+           email = (c["email"])
 
-        userId = username +" "+ password +" "+ email
+           userId = username +" "+ password +" "+ email
 
-        my_output= fullname +" "+ post +" "+ userId
+           my_output= fullname +"\n"+ post +"\n"+ userId
 
-    return render_template('home.html', user_input=my_output)
-
+           return render_template('home.html', user_input=my_output)
+        elif user_input=="":
+           my_output = "plz submit input"
+           return render_template('home.html', user_input=my_output)
+        else:
+            my_output = "only api can be entered in the input "
+            return render_template('home.html', user_input=my_output)
+        
+           
 
 if __name__ == '__main__': 
-    app.run(debug=True,port=5004)
+    app.run(debug=True,port=50015)
