@@ -24,63 +24,56 @@ def index():
 # Route for the Home Page
 @app.route('/home', methods=['GET', 'POST'])
 def home():
-    #user_input = None
     my_output = None
     if request.method == 'POST':  # Handle form submission
         user_input = request.form.get('user_input')  # Get the text from the textarea
-        if user_input=="api":
+        if user_input == "api":
+            try:
+                data = "https://randomuser.me/api/"  # Fixing the API URL
+                x1 = requests.get(data)
+                output = x1.json()
+                b = output["results"]
 
-           data="https://randomuser.me/"+user_input
-           x1=requests.get(data)
-           output=x1.json()
-           b = output["results"]
+                c = b[0]
+                gender = c["gender"]
+                title = c["name"]["title"]
+                first = c["name"]["first"]
+                last = c["name"]["last"]
+                date = c["dob"]["date"]
+                age = c["dob"]["age"]
 
-           c = (b[0])
- 
-           gender = (c["gender"])
+                fullname = f"{gender} {title} {first} {last} {date} {age}"
 
-           title = (c["name"]["title"])
+                country = c["location"]["country"]
+                state = c["location"]["state"]
+                city = c["location"]["city"]
+                postcode = c["location"]["postcode"]
 
-           first = (c["name"]["first"])
+                post = f"{country} {state} {city} {postcode}"
 
-           last = (c["name"]["last"]) 
+                username = c["login"]["username"]
+                password = c["login"]["password"]
+                email = c["email"]
 
-           date = (c["dob"]["date"])
+                user_id = f"{username} {password} {email}"
 
-           age = (c["dob"]["age"])
+                my_output = f"{fullname}\n{post}\n{user_id}"
+            except Exception as e:
+                my_output = f"An error occurred: {str(e)}"
 
-           fullname = gender +" "+ title + " "+ first + " " + last   + " " + date +" "+ str(age)
-
-           Country = (c["location"]["country"])
-
-           state = (c["location"]["state"])
-
-           city = (c["location"]["city"])
-
-           postcode = (c["location"]["postcode"])
-
-
-           post= Country +" "+ state +" "+ city +" "+ str(postcode)
-
-           username = (c["login"]["username"])
-
-           password = (c["login"]["password"])
-
-           email = (c["email"])
-
-           userId = username +" "+ password +" "+ email
-
-           my_output= fullname +"\n"+ post +"\n"+ userId
-
-           return render_template('home.html', user_input=my_output)
-        elif user_input=="":
-           my_output = "plz submit input"
-           return render_template('home.html', user_input=my_output)
-        else:
-            my_output = "only api can be entered in the input "
             return render_template('home.html', user_input=my_output)
-        
-           
+
+        elif user_input == "":
+            my_output = "Please submit input."
+            return render_template('home.html', user_input=my_output)
+
+        else:
+            my_output = "Only 'api' can be entered in the input."
+            return render_template('home.html', user_input=my_output)
+
+    # Render the page for GET requests or if no valid response is returned.
+    return render_template('home.html', user_input=my_output)
+
 
 if __name__ == '__main__': 
-    app.run(debug=True,port=50015)
+    app.run(debug=True,port=5015)
