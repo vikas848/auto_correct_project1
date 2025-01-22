@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 import requests
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'  # Required for session security
 
 # Route for Login Page
 @app.route('/', methods=['GET', 'POST'])
@@ -12,7 +13,8 @@ def index():
         password = request.form.get('password')
 
         # Example: Hardcoded credentials
-        if username == 'Vikas Singh' and email=='6391782926vs@gmail.com' and password == '9569':
+        if username == 'Vikas Singh' and email == '6391782926vs@gmail.com' and password == '9569':
+            session['user'] = username  # Store username in session
             return redirect(url_for('home'))
         else:
             error = "Invalid username or password"
@@ -20,10 +22,12 @@ def index():
 
     return render_template('index.html')  # Render login page for GET request
 
-
 # Route for the Home Page
 @app.route('/home', methods=['GET', 'POST'])
 def home():
+    if 'user' not in session:  # Check if user is logged in
+        return redirect(url_for('index'))  # Redirect to login page if not logged in
+
     my_output = None
     if request.method == 'POST':  # Handle form submission
         user_input = request.form.get('user_input')  # Get the text from the textarea
@@ -74,6 +78,11 @@ def home():
     # Render the page for GET requests or if no valid response is returned.
     return render_template('home.html', user_input=my_output)
 
+# Logout Route
+@app.route('/logout')
+def logout():
+    session.pop('user', None)  # Remove user from session
+    return redirect(url_for('index'))
 
 if __name__ == '__main__': 
-    app.run(debug=True,port=5015)
+    app.run(debug=True, port=5012)
