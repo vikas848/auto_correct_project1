@@ -1,9 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import requests
+from openai import OpenAI 
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session security
 
+# calling apikey as credentials
+myapi_key = "(use api key)"  # <------------------------------------------------------------
+gptclient = OpenAI(api_key=myapi_key)
 # Route for Login Page
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -31,37 +35,25 @@ def home():
     my_output = None
     if request.method == 'POST':  # Handle form submission
         user_input = request.form.get('user_input')  # Get the text from the textarea
-        if user_input == "api":
+        if user_input :
             try:
-                data = "https://randomuser.me/api/"  # Fixing the API URL
-                x1 = requests.get(data)
-                output = x1.json()
-                b = output["results"]
-
-                c = b[0]
-                gender = c["gender"]
-                title = c["name"]["title"]
-                first = c["name"]["first"]
-                last = c["name"]["last"]
-                date = c["dob"]["date"]
-                age = c["dob"]["age"]
-
-                fullname = f"{gender} {title} {first} {last} {date} {age}"
-
-                country = c["location"]["country"]
-                state = c["location"]["state"]
-                city = c["location"]["city"]
-                postcode = c["location"]["postcode"]
-
-                post = f"{country} {state} {city} {postcode}"
-
-                username = c["login"]["username"]
-                password = c["login"]["password"]
-                email = c["email"]
-
-                user_id = f"{username} {password} {email}"
-
-                my_output = f"{fullname}\n{post}\n{user_id}"
+                completion = gptclient.chat.completions.create(
+                        model="gpt-4o",
+                        messages=[
+                            {"role": "system", "content": "You are a helpful assistant. you need to correct the gramitcal and spelling mistakes given by user"},
+                            {"role": "system", "content": "You strictly say to to any other thing apart from correcting the statement."},
+                            {"role": "user", "content": "tell me about java and python language"},
+                            {"role": "assistant", "content": "sorry i can't provide any info apart form setence correction"},
+                            {"role": "user", "content": "what is water supply?"},
+                            {"role": "assistant", "content": "sorry i can't provide any info apart form setence correction"},
+                            {
+                                "role": "user",
+                                "content": user_input
+                            }
+                        ]
+                    )
+                my_output=completion.choices[0].message.content
+                
             except Exception as e:
                 my_output = f"An error occurred: {str(e)}"
 
@@ -85,4 +77,4 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__': 
-    app.run(debug=True, port=5012)
+    app.run(debug=True, port=5016)
